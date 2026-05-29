@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { MessageSquare, FileText, LogOut, Shield, Database, LayoutDashboard, Sun, Moon } from 'lucide-react';
+import { MessageSquare, FileText, LogOut, Shield, Database, LayoutDashboard, Sun, Moon, Menu, X } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: 'chat' | 'documents' | 'dashboard';
@@ -11,27 +11,35 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
   const { user, tenant, logout } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  console.log('[Sidebar Debug] Rendering with theme prop:', theme);
-
-  const handleToggleClick = () => {
-    console.log('[Sidebar Debug] Clicked theme toggle button');
-    toggleTheme();
+  const handleNavClick = (tab: 'chat' | 'documents' | 'dashboard') => {
+    setActiveTab(tab);
+    setMobileOpen(false);
   };
 
-  return (
+  const sidebarContent = (
     <aside className="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800/80 flex flex-col h-full text-slate-600 dark:text-slate-300 transition-all duration-200">
       {/* Brand Header */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center space-x-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
-          <Database className="w-6 h-6 text-white" />
+      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <Database className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="font-bold text-lg text-slate-900 dark:text-white leading-tight">RAGAssist</h1>
+            <span className="text-xs text-brand-500 dark:text-brand-400 font-semibold tracking-wider uppercase glow-text-indigo">
+              Enterprise
+            </span>
+          </div>
         </div>
-        <div>
-          <h1 className="font-bold text-lg text-slate-900 dark:text-white leading-tight">RAGAssist</h1>
-          <span className="text-xs text-brand-500 dark:text-brand-400 font-semibold tracking-wider uppercase glow-text-indigo">
-            Enterprise
-          </span>
-        </div>
+        {/* Close button — only visible in mobile overlay */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Tenant Context Indicator */}
@@ -46,8 +54,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
       {/* Navigation List */}
       <nav className="flex-1 px-4 py-2 space-y-1.5">
         <button
-          onClick={() => setActiveTab('dashboard')}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-205 ${
+          onClick={() => handleNavClick('dashboard')}
+          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
             activeTab === 'dashboard'
               ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
               : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -58,8 +66,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
         </button>
 
         <button
-          onClick={() => setActiveTab('chat')}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-205 ${
+          onClick={() => handleNavClick('chat')}
+          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
             activeTab === 'chat'
               ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
               : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -70,8 +78,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
         </button>
 
         <button
-          onClick={() => setActiveTab('documents')}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-205 ${
+          onClick={() => handleNavClick('documents')}
+          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
             activeTab === 'documents'
               ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
               : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -97,10 +105,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
             </div>
           </div>
         )}
-        
+
         {/* Theme Mode Toggle Button */}
         <button
-          onClick={handleToggleClick}
+          onClick={toggleTheme}
           className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all duration-200 mb-1.5"
         >
           {theme === 'dark' ? (
@@ -125,5 +133,48 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
         </button>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar with hamburger */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800/80 shadow-sm">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow shadow-brand-500/20">
+            <Database className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-bold text-base text-slate-900 dark:text-white">RAGAssist</span>
+        </div>
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+          aria-label="Open navigation"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Desktop sidebar — always visible */}
+      <div className="hidden md:flex h-full">
+        {sidebarContent}
+      </div>
+
+      {/* Mobile overlay backdrop */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile slide-in drawer */}
+      <div
+        className={`md:hidden fixed top-0 left-0 z-50 h-full transition-transform duration-300 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {sidebarContent}
+      </div>
+    </>
   );
 };
