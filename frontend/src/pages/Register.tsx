@@ -4,13 +4,14 @@ import { Database, ShieldAlert, CheckCircle, Globe, Mail, Lock, User as UserIcon
 
 interface RegisterProps {
   onLoginClick: () => void;
+  onBackToLanding: () => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
 const inputClass = "w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 px-3.5 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-500";
 
-export const Register: React.FC<RegisterProps> = ({ onLoginClick, theme, toggleTheme }) => {
+export const Register: React.FC<RegisterProps> = ({ onLoginClick, onBackToLanding, theme, toggleTheme }) => {
   const { register, error, clearError } = useAuth();
 
   const [tenantName, setTenantName] = useState<string>('');
@@ -45,17 +46,34 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick, theme, toggleT
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-brand-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Theme toggle — top right */}
-      <button
-        onClick={toggleTheme}
-        className="absolute top-4 right-4 z-20 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-brand-400 dark:hover:border-brand-500 shadow-sm transition-all duration-200"
-        aria-label="Toggle theme"
-      >
-        {theme === 'dark'
-          ? <Sun className="w-4 h-4 text-amber-400" />
-          : <Moon className="w-4 h-4 text-indigo-500" />
-        }
-      </button>
+      {/* Top bar — brand (left) + theme toggle (right) */}
+      <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
+        <button
+          onClick={onBackToLanding}
+          className="flex items-center gap-2.5 group"
+          aria-label="Back to home"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-all duration-200">
+            <Database className="w-5 h-5 text-white" />
+          </div>
+          <div className="hidden sm:block">
+            <span className="font-bold text-base text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">RAGAssist</span>
+            <span className="block text-[9px] text-brand-500 font-bold uppercase tracking-widest leading-none">Enterprise</span>
+          </div>
+          <span className="sm:hidden font-bold text-base text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">RAGAssist</span>
+        </button>
+
+        <button
+          onClick={toggleTheme}
+          className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-brand-400 dark:hover:border-brand-500 shadow-sm transition-all duration-200"
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark'
+            ? <Sun className="w-4 h-4 text-amber-400" />
+            : <Moon className="w-4 h-4 text-indigo-500" />
+          }
+        </button>
+      </div>
 
       <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-8 rounded-3xl glow-indigo z-10 shadow-lg dark:shadow-none transition-all duration-200">
 

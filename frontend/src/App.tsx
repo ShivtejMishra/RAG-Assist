@@ -124,6 +124,7 @@ const AppContent: React.FC = () => {
           theme={theme}
           toggleTheme={toggleTheme}
           onLoginClick={() => setAuthScreen('login')}
+          onBackToLanding={() => setAuthScreen('landing')}
         />
       );
     }
@@ -132,6 +133,7 @@ const AppContent: React.FC = () => {
         theme={theme}
         toggleTheme={toggleTheme}
         onRegisterClick={() => setAuthScreen('register')}
+        onBackToLanding={() => setAuthScreen('landing')}
       />
     );
   }
