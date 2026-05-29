@@ -84,17 +84,20 @@ async def upload_document(
     )
     await doc_repo.save(doc_entity)
 
-    # 4. Dispatch tasks. We try Celery first, and if it fails to publish, we use FastAPI BackgroundTasks.
+    # 4. Dispatch tasks. We use Celery if configured, otherwise fallback to local BackgroundTasks.
     dispatched_celery = False
-    try:
-        # Import task inside route to prevent circular import issues
-        from app.infrastructure.tasks.worker import ingest_file_task
-        ingest_file_task.delay(doc_entity.id, temp_path)
-        dispatched_celery = True
-        logger.info("dispatched_ingestion_to_celery", document_id=doc_entity.id)
-    except Exception as cel_err:
-        logger.warning("celery_dispatch_failed_falling_back_to_local", error=str(cel_err))
-        # Fallback to FastAPI's built-in background tasks (which runs locally on separate thread)
+    if settings.USE_CELERY:
+        try:
+            # Import task inside route to prevent circular import issues
+            from app.infrastructure.tasks.worker import ingest_file_task
+            ingest_file_task.delay(doc_entity.id, temp_path)
+            dispatched_celery = True
+            logger.info("dispatched_ingestion_to_celery", document_id=doc_entity.id)
+        except Exception as cel_err:
+            logger.warning("celery_dispatch_failed_falling_back_to_local", error=str(cel_err))
+            
+    if not dispatched_celery:
+        # Fallback to FastAPI's built-in background tasks (runs locally on the same API container thread-pool)
         background_tasks.add_task(local_background_ingest, doc_entity.id, temp_path)
 
     # Return document details
@@ -103,7 +106,7 @@ async def upload_document(
         "tenant_id": doc_entity.tenant_id,
         "filename": doc_entity.filename,
         "file_size": doc_entity.file_size,
-        "status": DocumentStatus.PROCESSING if dispatched_celery else DocumentStatus.UPLOADED,
+        "status": DocumentStatus.PROCESSING,
         "chunk_count": 0,
         "created_at": doc_entity.created_at
     }

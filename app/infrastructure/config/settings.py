@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     # Task Queue Celery & Redis
     REDIS_URL: str = "redis://localhost:6379/0"
+    USE_CELERY: bool = False
 
     # AWS configuration (for document uploads)
     # If left blank, files are stored on local workspace disk in 'uploads/' directory
