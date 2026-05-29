@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # Primary API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - DEBUG=true
+      - JWT_SECRET_KEY=9a7c36a4ebdfd2a02b1f868c2cfb37b60e9d6d34e2abcb2df721867c4df60e2a
+      - JWT_ALGORITHM=HS256
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - MONGODB_DB_NAME=ragassist_enterprise
+      - QDRANT_URL=http://qdrant:6333
+      - REDIS_URL=redis://redis:6379/0
+      # User must update this env var or pass it in locally
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - uploads_volume:/code/uploads
+    depends_on:
+      - mongodb
+      - qdrant
+      - redis
+    networks:
+      - rag_network
+
+  # Background Ingestion Workers
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A app.infrastructure.tasks.worker.celery_app worker --loglevel=info
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - MONGODB_DB_NAME=ragassist_enterprise
+      - QDRANT_URL=http://qdrant:6333
+      - REDIS_URL=redis://redis:6379/0
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - uploads_volume:/code/uploads
+    depends_on:
+      - redis
+      - mongodb
+      - qdrant
+    networks:
+      - rag_network
+
+  # Redis Ingestion Queue Broker
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - rag_network
+
+  # Local MongoDB Metadata Store
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - rag_network
+
+  # Isolated Qdrant Vector database
+  qdrant:
+    image: qdrant/qdrant:v1.8.0
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - rag_network
+
+  # React Frontend client served via Nginx proxy
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - rag_network
+
+volumes:
+  mongodb_data:
+  qdrant_data:
+  uploads_volume:
+
+networks:
+  rag_network:
+    driver: bridge
