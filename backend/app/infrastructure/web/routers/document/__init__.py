@@ -15,8 +15,7 @@ logger = structlog.get_logger()
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
 # Fallback background runner in case Celery is not active/available
-def local_background_ingest(document_id: str, file_path: str):
-    import asyncio
+async def local_background_ingest(document_id: str, file_path: str):
     try:
         if not os.path.exists(file_path):
             return
@@ -24,16 +23,7 @@ def local_background_ingest(document_id: str, file_path: str):
             content = f.read()
         
         ingest_service = get_ingest_use_case()
-        # Since this runs in a separate thread/task context, we run it in a new loop if needed
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-        loop.run_until_complete(
-            ingest_service.ingest_document(document_id, content)
-        )
+        await ingest_service.ingest_document(document_id, content)
         
         # Clean up temp file
         if os.path.exists(file_path):

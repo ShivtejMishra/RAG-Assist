@@ -52,9 +52,9 @@ const AppContent: React.FC = () => {
   const [docsLoading, setDocsLoading] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  const fetchDocuments = async () => {
+  const fetchDocuments = async (silent: boolean = false) => {
     if (!isAuthenticated) return;
-    setDocsLoading(true);
+    if (!silent) setDocsLoading(true);
     try {
       const response = await fetch('/api/v1/documents/', {
         headers: getHeaders(),
@@ -70,13 +70,13 @@ const AppContent: React.FC = () => {
     } catch (err) {
       console.error('Failed to load documents list', err);
     } finally {
-      setDocsLoading(false);
+      if (!silent) setDocsLoading(false);
     }
   };
 
   // Poll for document status (essential for background celery vectorization)
   useEffect(() => {
-    fetchDocuments();
+    fetchDocuments(false);
   }, [isAuthenticated, refreshTrigger]);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const AppContent: React.FC = () => {
     
     if (hasActiveTasks) {
       const interval = setInterval(() => {
-        fetchDocuments();
+        fetchDocuments(true);
       }, 3000); // poll every 3s
       return () => clearInterval(interval);
     }
