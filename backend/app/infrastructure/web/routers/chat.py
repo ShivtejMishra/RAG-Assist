@@ -14,7 +14,7 @@ from app.use_cases.chat.chat_use_case import ChatUseCase
 
 router = APIRouter(prefix="/chats", tags=["Conversational AI"])
 
-@router.get("/", response_model=List[ConversationResponse])
+@router.get("", response_model=List[ConversationResponse])
 async def list_chats(
     current_user: User = Depends(require_viewer),
     chat_service: ChatUseCase = Depends(get_chat_use_case)
@@ -26,7 +26,7 @@ async def list_chats(
     # Map to schema response
     return convos
 
-@router.post("/", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
 async def create_chat(
     payload: ConversationCreate,
     current_user: User = Depends(require_viewer),

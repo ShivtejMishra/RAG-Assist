@@ -56,7 +56,7 @@ const AppContent: React.FC = () => {
     if (!isAuthenticated) return;
     if (!silent) setDocsLoading(true);
     try {
-      const response = await fetch('/api/v1/documents/', {
+      const response = await fetch('/api/v1/documents', {
         headers: getHeaders(),
       });
       if (response.status === 401) {

@@ -101,7 +101,7 @@ async def upload_document(
         "created_at": doc_entity.created_at
     }
 
-@router.get("/", response_model=List[DocumentResponse])
+@router.get("", response_model=List[DocumentResponse])
 async def list_documents(
     current_user: User = Depends(require_viewer),
     doc_repo: MongoDocumentRepository = Depends(get_document_repo)

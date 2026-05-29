@@ -21,8 +21,8 @@ export const Dashboard: React.FC = () => {
     try {
       const headers = getHeaders();
       const [docsRes, chatsRes] = await Promise.all([
-        fetch('/api/v1/documents/', { headers }),
-        fetch('/api/v1/chats/', { headers })
+        fetch('/api/v1/documents', { headers }),
+        fetch('/api/v1/chats', { headers })
       ]);
       
       if (docsRes.status === 401 || chatsRes.status === 401) {

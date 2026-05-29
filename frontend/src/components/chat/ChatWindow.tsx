@@ -28,7 +28,7 @@ export const ChatWindow: React.FC = () => {
   // Fetch all conversation history
   const fetchConversations = async (selectFirst: boolean = false) => {
     try {
-      const response = await fetch('/api/v1/chats/', {
+      const response = await fetch('/api/v1/chats', {
         headers: getHeaders(),
       });
       if (response.status === 401) {
@@ -88,7 +88,7 @@ export const ChatWindow: React.FC = () => {
 
   const createNewChat = async () => {
     try {
-      const response = await fetch('/api/v1/chats/', {
+      const response = await fetch('/api/v1/chats', {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ title: 'New Conversation' }),
@@ -144,7 +144,7 @@ export const ChatWindow: React.FC = () => {
     // 1. Create a session if none exists
     if (!targetConvoId) {
       try {
-        const response = await fetch('/api/v1/chats/', {
+        const response = await fetch('/api/v1/chats', {
           method: 'POST',
           headers: getHeaders(),
           body: JSON.stringify({ title: input.substring(0, 30) + '...' }),
