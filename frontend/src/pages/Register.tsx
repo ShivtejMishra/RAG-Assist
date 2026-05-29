@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Database, ShieldAlert, CheckCircle, Globe, Mail, Lock, User as UserIcon } from 'lucide-react';
+import { Database, ShieldAlert, CheckCircle, Globe, Mail, Lock, User as UserIcon, Sun, Moon } from 'lucide-react';
 
 interface RegisterProps {
   onLoginClick: () => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
-export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
+const inputClass = "w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 px-3.5 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-500";
+
+export const Register: React.FC<RegisterProps> = ({ onLoginClick, theme, toggleTheme }) => {
   const { register, error, clearError } = useAuth();
-  
+
   const [tenantName, setTenantName] = useState<string>('');
   const [domain, setDomain] = useState<string>('');
   const [adminName, setAdminName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  
+
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -27,7 +31,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
     try {
       await register(tenantName, domain, email, password, adminName);
       setSuccess(true);
-    } catch (err) {
+    } catch {
       // Handled by auth context error field
     } finally {
       setLoading(false);
@@ -36,13 +40,25 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
 
   return (
     <div className="min-h-full flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-6 relative overflow-hidden transition-all duration-200">
-      
+
       {/* Background Gradients */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-brand-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-brand-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* Theme toggle — top right */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 z-20 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-brand-400 dark:hover:border-brand-500 shadow-sm transition-all duration-200"
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark'
+          ? <Sun className="w-4 h-4 text-amber-400" />
+          : <Moon className="w-4 h-4 text-indigo-500" />
+        }
+      </button>
 
       <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-8 rounded-3xl glow-indigo z-10 shadow-lg dark:shadow-none transition-all duration-200">
-        
+
         {/* Header Title */}
         <div className="text-center mb-6 bg-transparent">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-brand-500/20">
@@ -59,8 +75,8 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
               <CheckCircle className="w-7 h-7" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Workspace Provisioned</h3>
-              <p className="text-xs text-slate-550 dark:text-slate-400 leading-normal px-2 font-medium">
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">Workspace Provisioned</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal px-2 font-medium">
                 Tenant isolation and database settings successfully created. You can now login with your administrator account.
               </p>
             </div>
@@ -81,7 +97,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
                   <p className="font-bold">Setup failure</p>
                   <p className="mt-0.5 leading-relaxed font-semibold">{error}</p>
                 </div>
-                <button 
+                <button
                   onClick={clearError}
                   className="text-red-500 dark:text-red-400 hover:text-red-850 dark:hover:text-white font-bold leading-none text-sm p-1 rounded"
                 >
@@ -93,7 +109,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
             <form onSubmit={handleSubmit} className="space-y-3.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1">
+                  <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1">
                     Org Name
                   </label>
                   <input
@@ -102,29 +118,29 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
                     placeholder="Acme Corp"
                     value={tenantName}
                     onChange={(e) => setTenantName(e.target.value)}
-                    className="w-full bg-slate-100/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 px-3.5 text-xs font-semibold text-slate-800 dark:text-slate-205 outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-655"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1">
+                  <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1">
                     Domain
                   </label>
                   <div className="relative">
-                    <Globe className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Globe className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       required
                       placeholder="acme.com"
                       value={domain}
                       onChange={(e) => setDomain(e.target.value)}
-                      className="w-full bg-slate-100/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 pl-8.5 pr-3 text-xs font-semibold text-slate-800 dark:text-slate-205 outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-655"
+                      className={`${inputClass} pl-8`}
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1.5">
+                <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1.5">
                   Admin Full Name
                 </label>
                 <div className="relative">
@@ -135,13 +151,13 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
                     placeholder="Alice Smith"
                     value={adminName}
                     onChange={(e) => setAdminName(e.target.value)}
-                    className="w-full bg-slate-100/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 pl-9 pr-3.5 text-xs font-semibold text-slate-800 dark:text-slate-205 outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-655"
+                    className={`${inputClass} pl-9`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1.5">
+                <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1.5">
                   Admin Email
                 </label>
                 <div className="relative">
@@ -152,13 +168,13 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
                     placeholder="admin@acme.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-100/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 pl-9 pr-3.5 text-xs font-semibold text-slate-800 dark:text-slate-205 outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-655"
+                    className={`${inputClass} pl-9`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1.5">
+                <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1.5">
                   Secure Password
                 </label>
                 <div className="relative">
@@ -169,7 +185,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
                     placeholder="Min 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-100/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl py-2.5 pl-9 pr-3.5 text-xs font-semibold text-slate-800 dark:text-slate-205 outline-none transition-all duration-150 placeholder-slate-400 dark:placeholder-slate-655"
+                    className={`${inputClass} pl-9`}
                   />
                 </div>
               </div>
@@ -177,7 +193,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-all duration-150 shadow-lg shadow-brand-500/10 active:scale-[0.98]"
+                className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center transition-all duration-150 shadow-lg shadow-brand-500/10 active:scale-[0.98] mt-1"
               >
                 {loading ? 'Configuring secure tenant...' : 'Provision Tenant Workspace'}
               </button>
@@ -187,7 +203,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
             <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800/60 text-center">
               <p className="text-xs text-slate-400 dark:text-slate-500 font-bold">
                 Already registered?{' '}
-                <button 
+                <button
                   onClick={onLoginClick}
                   className="text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 font-extrabold focus:outline-none hover:underline"
                 >
@@ -197,7 +213,6 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
             </div>
           </>
         )}
-
       </div>
     </div>
   );

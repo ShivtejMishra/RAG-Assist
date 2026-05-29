@@ -1,22 +1,50 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { MessageSquare, FileText, LogOut, Shield, Database, LayoutDashboard, Sun, Moon, Menu, X } from 'lucide-react';
+import { MessageSquare, FileText, LogOut, Database, LayoutDashboard, Sun, Moon, Menu, X, User as UserIcon } from 'lucide-react';
+
+type Tab = 'chat' | 'documents' | 'dashboard' | 'profile';
 
 interface SidebarProps {
-  activeTab: 'chat' | 'documents' | 'dashboard';
-  setActiveTab: (tab: 'chat' | 'documents' | 'dashboard') => void;
+  activeTab: Tab;
+  setActiveTab: (tab: Tab) => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
+
+/* Inline avatar with initials */
+const Avatar: React.FC<{ name: string }> = ({ name }) => {
+  const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+  const gradients = ['from-brand-600 to-indigo-500', 'from-indigo-500 to-purple-600', 'from-emerald-500 to-cyan-500', 'from-amber-500 to-orange-500'];
+  const g = gradients[name.charCodeAt(0) % gradients.length];
+  return (
+    <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${g} flex items-center justify-center text-xs font-extrabold text-white shadow select-none flex-shrink-0`}>
+      {initials}
+    </div>
+  );
+};
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
   const { user, tenant, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleNavClick = (tab: 'chat' | 'documents' | 'dashboard') => {
+  const handleNavClick = (tab: Tab) => {
     setActiveTab(tab);
     setMobileOpen(false);
   };
+
+  const navBtn = (tab: Tab, Icon: React.FC<{ className?: string }>, label: string) => (
+    <button
+      onClick={() => handleNavClick(tab)}
+      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+        activeTab === tab
+          ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
+          : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+      }`}
+    >
+      <Icon className="w-5 h-5 flex-shrink-0" />
+      <span>{label}</span>
+    </button>
+  );
 
   const sidebarContent = (
     <aside className="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800/80 flex flex-col h-full text-slate-600 dark:text-slate-300 transition-all duration-200">
@@ -33,7 +61,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
             </span>
           </div>
         </div>
-        {/* Close button — only visible in mobile overlay */}
         <button
           onClick={() => setMobileOpen(false)}
           className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
@@ -53,57 +80,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
 
       {/* Navigation List */}
       <nav className="flex-1 px-4 py-2 space-y-1.5">
-        <button
-          onClick={() => handleNavClick('dashboard')}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-            activeTab === 'dashboard'
-              ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
-              : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-          }`}
-        >
-          <LayoutDashboard className="w-5 h-5" />
-          <span>Analytics Dashboard</span>
-        </button>
-
-        <button
-          onClick={() => handleNavClick('chat')}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-            activeTab === 'chat'
-              ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
-              : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-          }`}
-        >
-          <MessageSquare className="w-5 h-5" />
-          <span>Knowledge Chat</span>
-        </button>
-
-        <button
-          onClick={() => handleNavClick('documents')}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-            activeTab === 'documents'
-              ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/15'
-              : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-          }`}
-        >
-          <FileText className="w-5 h-5" />
-          <span>Document Manager</span>
-        </button>
+        {navBtn('dashboard', LayoutDashboard, 'Analytics Dashboard')}
+        {navBtn('chat', MessageSquare, 'Knowledge Chat')}
+        {navBtn('documents', FileText, 'Document Manager')}
+        {navBtn('profile', UserIcon, 'My Profile')}
       </nav>
 
       {/* User Session & Theme Footer */}
       <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
         {user && (
-          <div className="flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/50 mb-3 shadow-sm dark:shadow-none">
-            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-              <Shield className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-            </div>
+          <button
+            onClick={() => handleNavClick('profile')}
+            className={`w-full flex items-center space-x-3 p-3 rounded-xl border mb-3 text-left transition-all duration-200 ${
+              activeTab === 'profile'
+                ? 'bg-brand-600/10 border-brand-500/30 dark:border-brand-500/20'
+                : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800/50 hover:border-brand-400/40 dark:hover:border-brand-500/30'
+            } shadow-sm dark:shadow-none`}
+          >
+            <Avatar name={user.full_name} />
             <div className="flex-1 min-w-0">
               <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{user.full_name}</h4>
-              <span className="text-[9px] text-slate-500 dark:text-slate-450 font-bold tracking-wider uppercase">
+              <span className="text-[9px] text-brand-600 dark:text-brand-400 font-bold tracking-wider uppercase">
                 {user.role}
               </span>
             </div>
-          </div>
+          </button>
         )}
 
         {/* Theme Mode Toggle Button */}
@@ -154,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, theme
         </button>
       </div>
 
-      {/* Desktop sidebar — always visible */}
+      {/* Desktop sidebar */}
       <div className="hidden md:flex h-full">
         {sidebarContent}
       </div>

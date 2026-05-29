@@ -13,6 +13,7 @@ interface AuthContextType {
   logout: () => void;
   clearError: () => void;
   getHeaders: () => Record<string, string>;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -118,6 +119,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearError = () => setError(null);
 
+  const updateUser = (updates: Partial<User>) => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...updates };
+      localStorage.setItem('rag_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const getHeaders = () => {
     return {
       'Content-Type': 'application/json',
@@ -139,6 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         clearError,
         getHeaders,
+        updateUser,
       }}
     >
       {children}
