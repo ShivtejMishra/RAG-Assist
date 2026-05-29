@@ -121,19 +121,19 @@ const AppContent: React.FC = () => {
   return (
     <div className="h-full flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden font-sans">
       
-      {/* Sidebar Nav */}
+      {/* Sidebar Nav (desktop: inline flex, mobile: floating drawer rendered inside Sidebar) */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} theme={theme} toggleTheme={toggleTheme} />
       
-      {/* Main Display Area */}
-      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* Main Display Area — offset top on mobile for fixed top bar */}
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-slate-50 dark:bg-slate-950 pt-14 md:pt-0">
         {activeTab === 'dashboard' && <Dashboard />}
 
         {activeTab === 'chat' && <ChatWindow />}
         
         {activeTab === 'documents' && (
-          <div className="flex-1 overflow-y-auto p-8 max-w-5xl mx-auto w-full">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 max-w-5xl mx-auto w-full">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Document Center</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Document Center</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage files processed by Google Gemini and stored in Qdrant.</p>
             </div>
             

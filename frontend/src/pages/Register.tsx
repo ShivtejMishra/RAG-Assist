@@ -91,7 +91,7 @@ export const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-3.5">
-              <div className="grid grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
                   <label className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block mb-1">
                     Org Name

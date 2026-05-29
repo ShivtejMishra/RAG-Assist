@@ -108,12 +108,12 @@ export const Dashboard: React.FC = () => {
   ].slice(0, 4);
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-all duration-200">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-all duration-200">
       
       {/* Upper header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">System Performance & Insights</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">System Performance & Insights</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Real-time metrics for organization: <span className="text-brand-600 dark:text-brand-400 font-bold">{tenant?.name}</span>
           </p>
@@ -121,14 +121,14 @@ export const Dashboard: React.FC = () => {
         
         <button
           onClick={fetchStats}
-          className="px-4 py-2 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 hover:dark:border-slate-700 text-slate-700 dark:text-slate-300 transition-all duration-150 shadow-sm dark:shadow-none active:scale-95"
+          className="self-start sm:self-auto px-4 py-2 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 hover:dark:border-slate-700 text-slate-700 dark:text-slate-300 transition-all duration-150 shadow-sm dark:shadow-none active:scale-95"
         >
           Refresh Data
         </button>
       </div>
 
       {/* Grid statistics metrics */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         
         <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl glow-indigo flex items-center justify-between shadow-sm dark:shadow-none">
           <div>
@@ -176,10 +176,10 @@ export const Dashboard: React.FC = () => {
 
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         
         {/* Recent Workspace Activities Audit Feed */}
-        <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 p-6 rounded-2xl col-span-2 shadow-sm dark:shadow-none flex flex-col justify-between h-72">
+        <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 p-4 sm:p-6 rounded-2xl lg:col-span-2 shadow-sm dark:shadow-none flex flex-col justify-between h-72">
           <div className="flex items-center justify-between mb-4 select-none">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 flex items-center">
               <Database className="w-4 h-4 mr-2 text-brand-500 dark:text-brand-400" /> Workspace Activity Log
